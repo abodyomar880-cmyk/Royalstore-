@@ -1,0 +1,643 @@
+<!DOCTYPE html>
+
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>👑 رويال ستور - Xbox</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800;900&display=swap');
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Tajawal',Tahoma,Arial,sans-serif;background:#0a0a0f;color:#fff;
+     min-height:100vh;direction:rtl;-webkit-text-size-adjust:100%;}
+:root{--g:#c9a227;--g2:#a07820;}
+body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
+  background:radial-gradient(ellipse 70% 45% at 15% 5%,rgba(201,162,39,.08) 0%,transparent 55%),
+             radial-gradient(ellipse 50% 35% at 85% 95%,rgba(201,162,39,.05) 0%,transparent 50%);}
+
+/* ── iframe warning ── */
+#iframe-warn{display:none;position:fixed;inset:0;z-index:9999;
+background:rgba(0,0,0,.97);align-items:center;justify-content:center;padding:24px;text-align:center;}
+#iframe-warn.show{display:flex;}
+.warn-box{background:#1a1000;border:2px solid var(–g);border-radius:20px;padding:32px 24px;max-width:420px;}
+.warn-icon{font-size:48px;margin-bottom:16px;}
+.warn-title{font-size:20px;font-weight:900;color:var(–g);margin-bottom:12px;}
+.warn-body{font-size:14px;color:rgba(255,255,255,.7);line-height:1.7;margin-bottom:20px;}
+.warn-steps{background:rgba(201,162,39,.08);border:1px solid rgba(201,162,39,.2);
+border-radius:12px;padding:16px;text-align:right;margin-bottom:20px;}
+.warn-step{font-size:13px;color:rgba(255,255,255,.8);margin-bottom:8px;display:flex;align-items:flex-start;gap:8px;}
+.warn-num{background:var(–g);color:#000;font-weight:800;font-size:11px;
+border-radius:50%;width:20px;height:20px;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;}
+.warn-btn{padding:12px 28px;border-radius:10px;border:none;
+background:linear-gradient(135deg,var(–g),var(–g2));
+color:#000;font-weight:800;font-size:15px;cursor:pointer;font-family:inherit;}
+
+/* ── header ── */
+header{position:sticky;top:0;z-index:100;height:64px;display:flex;align-items:center;
+justify-content:space-between;padding:0 18px;
+background:rgba(10,10,15,.95);backdrop-filter:blur(14px);
+border-bottom:1px solid rgba(201,162,39,.2);}
+.logo{display:flex;align-items:center;gap:10px;}
+.crown{font-size:24px;filter:drop-shadow(0 0 7px rgba(201,162,39,.9));}
+.logo-main{font-size:16px;font-weight:900;letter-spacing:3px;text-transform:uppercase;
+background:linear-gradient(135deg,#f5d060,var(–g),var(–g2));
+-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+.logo-sub{font-size:8px;color:#6a4e10;letter-spacing:4px;}
+.nav{display:flex;gap:6px;}
+.nb{padding:7px 14px;border-radius:8px;cursor:pointer;font-family:inherit;font-size:13px;
+border:1px solid rgba(255,255,255,.08);background:transparent;color:rgba(255,255,255,.4);}
+.nb.on{border-color:rgba(201,162,39,.6);background:rgba(201,162,39,.12);
+color:var(–g);font-weight:700;}
+
+/* ── layout ── */
+main{position:relative;z-index:10;max-width:520px;margin:0 auto;padding:24px 16px 80px;}
+.card{background:rgba(255,255,255,.03);border:1px solid rgba(201,162,39,.15);
+border-radius:16px;padding:18px;margin-bottom:14px;}
+.hint{text-align:center;color:rgba(255,255,255,.28);font-size:13px;margin-bottom:20px;}
+
+/* ── mode toggle ── */
+.tog{display:flex;background:rgba(0,0,0,.45);border-radius:10px;padding:3px;
+border:1px solid rgba(201,162,39,.18);margin-bottom:16px;}
+.tb{flex:1;padding:10px 0;border-radius:8px;border:none;background:transparent;
+color:rgba(255,255,255,.4);font-size:14px;cursor:pointer;font-family:inherit;}
+.tb.on{background:linear-gradient(135deg,var(–g),var(–g2));color:#000;font-weight:700;}
+
+/* ── inputs ── */
+textarea,input{width:100%;padding:11px 14px;border-radius:10px;
+border:1px solid rgba(201,162,39,.22);background:rgba(255,255,255,.04);
+color:#fff;font-size:14px;font-family:inherit;outline:none;
+transition:border-color .2s;-webkit-appearance:none;}
+textarea:focus,input:focus{border-color:rgba(201,162,39,.55);}
+textarea{resize:none;line-height:1.5;margin-bottom:12px;}
+
+/* ── buttons ── */
+.btn{padding:14px 0;border-radius:10px;border:none;width:100%;
+background:linear-gradient(135deg,var(–g),var(–g2));
+color:#000;font-weight:800;font-size:15px;cursor:pointer;font-family:inherit;}
+.btn:disabled{opacity:.35;cursor:not-allowed;}
+.bsm{padding:7px 14px;border-radius:8px;border:none;
+background:linear-gradient(135deg,var(–g),var(–g2));
+color:#000;font-weight:700;font-size:12px;cursor:pointer;font-family:inherit;}
+.bdel{padding:6px 12px;border-radius:7px;border:none;
+background:rgba(255,60,60,.15);color:#ff7070;cursor:pointer;font-family:inherit;font-size:12px;}
+.bgray{padding:6px 12px;border-radius:7px;border:none;
+background:rgba(255,255,255,.07);color:#bbb;cursor:pointer;font-family:inherit;font-size:12px;}
+
+/* ── spinner ── */
+.spin-wrap{text-align:center;padding:28px 0;color:rgba(201,162,39,.7);}
+.spin{width:40px;height:40px;border-radius:50%;
+border:3px solid rgba(201,162,39,.15);border-top-color:var(–g);
+animation:spin .75s linear infinite;margin:0 auto 12px;}
+@keyframes spin{to{transform:rotate(360deg);}}
+@keyframes up{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);}}
+@keyframes glow{0%,100%{box-shadow:0 0 0 0 rgba(201,162,39,.4);}
+50%{box-shadow:0 0 0 12px rgba(201,162,39,0);}}
+
+/* ── result ── */
+.res{background:linear-gradient(135deg,rgba(201,162,39,.09),rgba(201,162,39,.03));
+border:1px solid rgba(201,162,39,.35);border-radius:16px;padding:24px;
+text-align:center;animation:up .35s ease;}
+.res-name{font-size:17px;font-weight:800;margin:8px 0 14px;
+background:linear-gradient(135deg,#f5d060,var(–g));
+-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+.pbox{background:linear-gradient(135deg,var(–g),var(–g2),#7a5c10);
+border-radius:12px;padding:22px 16px;box-shadow:0 8px 28px rgba(201,162,39,.3);}
+.plabel{font-size:11px;color:rgba(0,0,0,.6);letter-spacing:2px;margin-bottom:6px;}
+.pval{font-size:38px;font-weight:900;color:#000;line-height:1;}
+.punit{font-size:15px;font-weight:600;margin-right:6px;}
+.badge{display:inline-block;margin-bottom:8px;
+background:rgba(201,162,39,.15);border:1px solid rgba(201,162,39,.3);
+color:var(–g);font-size:11px;border-radius:20px;padding:2px 10px;}
+
+/* ── misc ── */
+.err{background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.06);
+border-radius:8px;padding:8px 12px;margin-bottom:10px;
+font-size:10px;color:rgba(255,255,255,.2);word-break:break-all;line-height:1.5;}
+.sec{font-size:12px;color:var(–g);font-weight:700;letter-spacing:1px;
+text-transform:uppercase;margin-bottom:12px;}
+.row{display:flex;gap:8px;align-items:center;}
+.tier{display:flex;justify-content:space-between;padding:7px 0;
+border-bottom:1px solid rgba(255,255,255,.05);font-size:12px;}
+.tier:last-child{border-bottom:none;}
+.ci{display:flex;justify-content:space-between;align-items:center;
+background:rgba(255,255,255,.025);border-radius:9px;padding:10px 12px;
+border:1px solid rgba(255,255,255,.05);margin-bottom:7px;}
+.flash{color:#5ecf72;font-size:13px;}
+.lock{width:66px;height:66px;border-radius:50%;background:rgba(201,162,39,.1);
+border:2px solid rgba(201,162,39,.3);display:flex;align-items:center;
+justify-content:center;font-size:26px;margin:0 auto 18px;animation:glow 2.2s infinite;}
+::-webkit-scrollbar{width:5px;}
+::-webkit-scrollbar-thumb{background:rgba(201,162,39,.25);border-radius:3px;}
+
+/* api key section */
+.apikey-card{background:rgba(201,162,39,.04);border:1px solid rgba(201,162,39,.2);
+border-radius:12px;padding:14px;margin-bottom:14px;}
+.apikey-toggle{font-size:12px;color:rgba(201,162,39,.6);cursor:pointer;text-align:center;
+padding:6px;border-radius:8px;border:1px solid rgba(201,162,39,.15);
+background:rgba(201,162,39,.05);}
+</style>
+
+</head>
+<body>
+
+<!-- ══ IFRAME WARNING ══ -->
+
+<div id="iframe-warn">
+  <div class="warn-box">
+    <div class="warn-icon">⚠️</div>
+    <div class="warn-title">يجب فتح الملف محلياً</div>
+    <div class="warn-body">
+      أنت تفتح الملف من داخل Claude.ai — وهذا يمنع الاتصال بالإنترنت.<br>
+      لازم تحمّل الملف وتفتحه من جهازك مباشرة.
+    </div>
+    <div class="warn-steps">
+      <div class="warn-step"><div class="warn-num">1</div><span>اضغط على زر التحميل أعلى هذه الصفحة (↓ Download)</span></div>
+      <div class="warn-step"><div class="warn-num">2</div><span>افتح الملف royal-store.html من تطبيق الملفات على جهازك</span></div>
+      <div class="warn-step"><div class="warn-num">3</div><span>سيفتح في المتصفح ويشتغل بشكل كامل</span></div>
+    </div>
+    <button class="warn-btn" onclick="document.getElementById('iframe-warn').classList.remove('show')">
+      حسناً، فهمت ✓
+    </button>
+  </div>
+</div>
+
+<header>
+  <div class="logo">
+    <span class="crown">👑</span>
+    <div>
+      <div class="logo-main">رويال ستور</div>
+      <div class="logo-sub">ROYAL STORE · XBOX</div>
+    </div>
+  </div>
+  <nav class="nav">
+    <button class="nb on" id="t-cust" onclick="tab('cust')">🎮 استعلام</button>
+    <button class="nb" id="t-admin" onclick="tab('admin')">⚙️ إدارة</button>
+  </nav>
+</header>
+
+<main>
+
+  <!-- ══ CUSTOMER ══ -->
+
+  <div id="p-cust">
+    <p class="hint">استعلم عن سعر أي لعبة Xbox بالريجن التركي</p>
+
+```
+<!-- API key (optional) -->
+<div id="apikey-section">
+  <div class="apikey-toggle" onclick="toggleApiKey()">
+    🔑 إضافة مفتاح Claude API (اختياري — للبحث الذكي)
+  </div>
+  <div id="apikey-input" style="display:none;margin-top:10px;">
+    <input type="password" id="api-key" placeholder="sk-ant-..." style="margin-bottom:8px;">
+    <button class="bsm" onclick="saveApiKey()" style="width:100%;padding:10px;">حفظ المفتاح</button>
+    <p style="font-size:11px;color:rgba(255,255,255,.25);margin-top:6px;text-align:center;">
+      يُحفظ محلياً فقط على جهازك · من anthropic.com/api
+    </p>
+  </div>
+</div>
+<div style="margin-bottom:14px;"></div>
+
+<div class="card">
+  <div class="tog">
+    <button class="tb on" id="m-url" onclick="mode('url')">🔗 رابط اللعبة</button>
+    <button class="tb" id="m-srch" onclick="mode('search')">🔍 بحث بالاسم</button>
+  </div>
+  <textarea id="q" rows="2"
+    placeholder="https://www.xbox.com/tr-tr/games/store/..."
+    style="direction:ltr;text-align:left;"
+    onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();go();}"></textarea>
+  <button class="btn" id="sbtn" onclick="go()">🎮  استعلام عن السعر</button>
+</div>
+
+<div id="ldg" class="spin-wrap" style="display:none;">
+  <div class="spin"></div>
+  <p id="ldg-msg" style="font-size:14px;">جاري البحث...</p>
+</div>
+<div id="errd" class="err" style="display:none;"></div>
+<div id="manual" style="display:none;" class="card" style="border-color:rgba(201,162,39,.3);">
+  <p style="font-size:14px;color:var(--g);font-weight:700;margin-bottom:4px;">📝 أدخل السعر يدوياً</p>
+  <p style="font-size:12px;color:rgba(255,255,255,.3);margin-bottom:12px;">أدخل سعر اللعبة بالليرة التركية</p>
+  <input id="mn" type="text" placeholder="اسم اللعبة (اختياري)" style="margin-bottom:10px;">
+  <div class="row">
+    <input id="mt" type="number" placeholder="مثال: 500"
+      onkeydown="if(event.key==='Enter') manual_apply();" style="flex:1;">
+    <span style="color:rgba(255,255,255,.3);font-size:14px;">₺</span>
+    <button class="bsm" onclick="manual_apply()">احسب</button>
+  </div>
+</div>
+<div id="res" class="res" style="display:none;">
+  <div style="font-size:40px;">🎮</div>
+  <div id="rname" class="res-name"></div>
+  <div id="rbadge" class="badge" style="display:none;">سعر مخصص</div>
+  <div class="pbox">
+    <div class="plabel">💰 سعر اللعبة في رويال ستور</div>
+    <div class="pval"><span id="rprice"></span><span class="punit">دينار</span></div>
+  </div>
+  <p style="margin-top:10px;font-size:11px;color:rgba(255,255,255,.2);">
+    الأسعار تقريبية وقد تتغير حسب سعر الصرف
+  </p>
+</div>
+```
+
+  </div>
+
+  <!-- ══ ADMIN LOGIN ══ -->
+
+  <div id="p-login" style="display:none;text-align:center;padding-top:50px;">
+    <div class="lock">🔐</div>
+    <h2 style="color:var(--g);margin-bottom:6px;font-size:18px;">لوحة التحكم</h2>
+    <p style="color:rgba(255,255,255,.3);font-size:13px;margin-bottom:24px;">أدخل الرقم السري</p>
+    <div style="max-width:230px;margin:0 auto;">
+      <input id="pin" type="password" placeholder="••••" maxlength="8"
+        style="font-size:22px;text-align:center;letter-spacing:8px;border-width:2px;margin-bottom:10px;"
+        onkeydown="if(event.key==='Enter') doLogin();">
+      <p id="perr" style="color:#ff7070;font-size:13px;margin-bottom:10px;min-height:18px;"></p>
+      <button class="btn" onclick="doLogin()">دخول</button>
+    </div>
+  </div>
+
+  <!-- ══ ADMIN PANEL ══ -->
+
+  <div id="p-admin" style="display:none;">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+      <h2 style="color:var(--g);font-size:17px;">⚙️ لوحة التحكم</h2>
+      <span id="flash" class="flash"></span>
+    </div>
+    <div class="card">
+      <div class="sec">💱 سعر الليرة التركية</div>
+      <div class="row">
+        <span style="color:#888;font-size:13px;white-space:nowrap;">1 ليرة =</span>
+        <input id="ri" type="number" value="35" style="flex:1;padding:9px 13px;font-size:13px;">
+        <span style="color:#888;font-size:13px;">دينار</span>
+        <button class="bsm" onclick="saveRate()">حفظ</button>
+      </div>
+    </div>
+    <div class="card">
+      <div class="sec">📊 جدول الربح التلقائي</div>
+      <div class="tier"><span style="color:rgba(255,255,255,.4);">0 – 2,000</span><span style="color:var(--g);font-weight:600;">5,000 ثابت</span></div>
+      <div class="tier"><span style="color:rgba(255,255,255,.4);">2,001 – 3,000</span><span style="color:var(--g);font-weight:600;">7,000 ثابت</span></div>
+      <div class="tier"><span style="color:rgba(255,255,255,.4);">3,001 – 4,999</span><span style="color:var(--g);font-weight:600;">8,000 ثابت</span></div>
+      <div class="tier"><span style="color:rgba(255,255,255,.4);">5,000 – 40,000</span><span style="color:var(--g);font-weight:600;">+ 5,000</span></div>
+      <div class="tier"><span style="color:rgba(255,255,255,.4);">40,001 – 60,000</span><span style="color:var(--g);font-weight:600;">+ 6,000</span></div>
+      <div class="tier"><span style="color:rgba(255,255,255,.4);">60,001 – 90,000</span><span style="color:var(--g);font-weight:600;">+ 8,000</span></div>
+      <div class="tier"><span style="color:rgba(255,255,255,.4);">90,001+</span><span style="color:var(--g);font-weight:600;">+ 10,000</span></div>
+    </div>
+    <div class="card">
+      <div class="sec">🎮 أسعار مخصصة</div>
+      <div style="display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap;">
+        <input id="nn" type="text" placeholder="اسم اللعبة" style="flex:2 1 120px;padding:9px 13px;font-size:13px;">
+        <input id="np" type="number" placeholder="دينار" style="flex:1 1 90px;padding:9px 13px;font-size:13px;">
+        <button class="bsm" onclick="addCP()">+ إضافة</button>
+      </div>
+      <div id="cplist"></div>
+    </div>
+  </div>
+
+</main>
+
+<script>
+// ══════════════════════════════════
+//  STATE
+// ══════════════════════════════════
+let curMode = 'url';
+let tryRate = parseFloat(localStorage.getItem('rsx_r')||'35');
+let CP = JSON.parse(localStorage.getItem('rsx_cp')||'{}');
+let authed = false;
+const PIN = '1234';
+
+// ══════════════════════════════════
+//  IFRAME DETECTION
+// ══════════════════════════════════
+if (window.self !== window.top) {
+  document.getElementById('iframe-warn').classList.add('show');
+}
+
+// ══════════════════════════════════
+//  INIT
+// ══════════════════════════════════
+document.getElementById('ri').value = tryRate;
+renderCP();
+const savedKey = localStorage.getItem('rsx_ak');
+if (savedKey) document.getElementById('api-key').value = savedKey;
+
+// ══════════════════════════════════
+//  PRICING
+// ══════════════════════════════════
+function calc(iqd) {
+  if (iqd <= 2000)  return 5000;
+  if (iqd <= 3000)  return 7000;
+  if (iqd <= 4999)  return 8000;
+  if (iqd <= 40000) return iqd + 5000;
+  if (iqd <= 60000) return iqd + 6000;
+  if (iqd <= 90000) return iqd + 8000;
+  return iqd + 10000;
+}
+
+// ══════════════════════════════════
+//  UI HELPERS
+// ══════════════════════════════════
+function tab(t) {
+  ['cust','login','admin'].forEach(x => {
+    document.getElementById('p-'+x).style.display = 'none';
+  });
+  document.getElementById('t-cust').className = 'nb' + (t==='cust'?' on':'');
+  document.getElementById('t-admin').className = 'nb' + (t==='admin'?' on':'');
+  if (t === 'cust') document.getElementById('p-cust').style.display = '';
+  else if (t === 'admin') {
+    document.getElementById(authed ? 'p-admin' : 'p-login').style.display = '';
+  }
+}
+
+function mode(m) {
+  curMode = m;
+  document.getElementById('m-url').className  = 'tb' + (m==='url'?' on':'');
+  document.getElementById('m-srch').className = 'tb' + (m==='search'?' on':'');
+  const qa = document.getElementById('q');
+  if (m === 'url') {
+    qa.placeholder = 'https://www.xbox.com/tr-tr/games/store/...';
+    qa.style.direction = 'ltr'; qa.style.textAlign = 'left'; qa.rows = 2;
+  } else {
+    qa.placeholder = 'اسم اللعبة بالإنجليزي   مثال: Forza Horizon 5';
+    qa.style.direction = 'rtl'; qa.style.textAlign = 'right'; qa.rows = 1;
+  }
+}
+
+function setLdg(msg) {
+  document.getElementById('ldg').style.display = '';
+  document.getElementById('ldg-msg').textContent = msg||'جاري البحث...';
+  document.getElementById('errd').style.display   = 'none';
+  document.getElementById('res').style.display    = 'none';
+  document.getElementById('manual').style.display = 'none';
+  document.getElementById('sbtn').disabled = true;
+}
+function setErr(msg) {
+  document.getElementById('ldg').style.display    = 'none';
+  document.getElementById('errd').style.display   = '';
+  document.getElementById('errd').textContent     = msg;
+  document.getElementById('manual').style.display = '';
+  document.getElementById('sbtn').disabled = false;
+}
+function setRes(name, price, custom) {
+  document.getElementById('ldg').style.display    = 'none';
+  document.getElementById('errd').style.display   = 'none';
+  document.getElementById('manual').style.display = 'none';
+  document.getElementById('res').style.display    = '';
+  document.getElementById('sbtn').disabled = false;
+  document.getElementById('rname').textContent    = name;
+  document.getElementById('rprice').textContent   = price.toLocaleString('ar-IQ');
+  document.getElementById('rbadge').style.display = custom ? '' : 'none';
+}
+
+// ══════════════════════════════════
+//  API KEY
+// ══════════════════════════════════
+function toggleApiKey() {
+  const el = document.getElementById('apikey-input');
+  el.style.display = el.style.display === 'none' ? '' : 'none';
+}
+function saveApiKey() {
+  const k = document.getElementById('api-key').value.trim();
+  if (k) { localStorage.setItem('rsx_ak', k); flash('✅ تم حفظ المفتاح'); }
+}
+
+// ══════════════════════════════════
+//  EXTRACT PRODUCT ID
+// ══════════════════════════════════
+function getPid(url) {
+  try {
+    const parts = new URL(url.trim()).pathname.split('/').filter(Boolean);
+    return parts[parts.length-1]?.toUpperCase() || null;
+  } catch { return null; }
+}
+
+// ══════════════════════════════════
+//  XBOX CATALOG API (direct)
+// ══════════════════════════════════
+async function xboxById(pid) {
+  const r = await fetch(
+    `https://displaycatalog.mp.microsoft.com/v7.0/products?bigIds=${pid}&market=TR&languages=tr-TR&MS-CV=DGU1mcuYo0WMMp`
+  );
+  if (!r.ok) throw new Error('Xbox API '+r.status);
+  const d = await r.json();
+  const p = d.Products?.[0];
+  if (!p) throw new Error('غير موجود');
+  let price = null;
+  for (const s of p.DisplaySkuAvailabilities||[])
+    for (const a of s.Availabilities||[]) {
+      const v = a.OrderManagementData?.Price?.ListPrice;
+      if (v != null) { price = v; break; }
+      if (price != null) break;
+    }
+  if (price == null) throw new Error('السعر غير متاح');
+  const name =
+    p.LocalizedProperties?.find(l=>l.Language?.startsWith('tr'))?.ProductTitle ||
+    p.LocalizedProperties?.[0]?.ProductTitle || pid;
+  return { name, priceTRY: price };
+}
+
+// ══════════════════════════════════
+//  XBOX SUGGEST API
+// ══════════════════════════════════
+async function xboxSearch(query) {
+  const r = await fetch(
+    `https://www.microsoft.com/msstoreapiprod/api/autosuggest?market=TR&languages=tr-TR` +
+    `&clientId=7F27B536-CF6B-4C65-8638-A0F8CBDFCA65&limit=5&productFamilyNames=Games` +
+    `&query=${encodeURIComponent(query)}`
+  );
+  if (!r.ok) throw new Error('Suggest '+r.status);
+  const d = await r.json();
+  const items = d.ResultSets?.[0]?.Suggests || [];
+  const item = items.find(s => s.BigProductId || s.Source==='Marketplace');
+  if (!item) throw new Error('لا نتائج');
+  let pid = item.BigProductId || item.Url?.match(/\/([A-Z0-9]{12})(?:\/|\?|$)/i)?.[1];
+  if (!pid) throw new Error('لا معرّف');
+  return xboxById(pid.toUpperCase());
+}
+
+// ══════════════════════════════════
+//  XBOX VIA CORS PROXY
+// ══════════════════════════════════
+async function xboxByIdProxy(pid) {
+  const target = `https://displaycatalog.mp.microsoft.com/v7.0/products?bigIds=${pid}&market=TR&languages=tr-TR&MS-CV=DGU1mcuYo0WMMp`;
+  const proxies = [
+    `https://corsproxy.io/?${encodeURIComponent(target)}`,
+    `https://api.allorigins.win/raw?url=${encodeURIComponent(target)}`,
+  ];
+  for (const p of proxies) {
+    try {
+      const r = await fetch(p);
+      if (!r.ok) continue;
+      const d = await r.json();
+      const prod = d.Products?.[0];
+      if (!prod) continue;
+      let price = null;
+      for (const s of prod.DisplaySkuAvailabilities||[])
+        for (const a of s.Availabilities||[]) {
+          const v = a.OrderManagementData?.Price?.ListPrice;
+          if (v != null) { price = v; break; }
+        }
+      if (price == null) continue;
+      const name =
+        prod.LocalizedProperties?.find(l=>l.Language?.startsWith('tr'))?.ProductTitle ||
+        prod.LocalizedProperties?.[0]?.ProductTitle || pid;
+      return { name, priceTRY: price };
+    } catch {}
+  }
+  throw new Error('Proxy failed');
+}
+
+// ══════════════════════════════════
+//  CLAUDE API (with user key)
+// ══════════════════════════════════
+async function claudeAsk(query, isUrl) {
+  const key = localStorage.getItem('rsx_ak');
+  if (!key) throw new Error('لا يوجد مفتاح API');
+  const prompt = isUrl
+    ? `What is the Turkish Xbox store price in TRY for the game at: ${query}?\nRespond ONLY with JSON: {"name":"Title","priceTRY":NUMBER}`
+    : `What is the Turkish Xbox store price in TRY for Xbox game: "${query}"?\nRespond ONLY with JSON: {"name":"Title","priceTRY":NUMBER}`;
+  const r = await fetch('https://api.anthropic.com/v1/messages', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'x-api-key': key,
+      'anthropic-version': '2023-06-01',
+    },
+    body: JSON.stringify({
+      model: 'claude-haiku-4-5-20251001',
+      max_tokens: 200,
+      messages: [{ role: 'user', content: prompt }],
+    }),
+  });
+  const d = await r.json();
+  if (d.error) throw new Error(d.error.message);
+  const txt = (d.content||[]).filter(b=>b.type==='text').map(b=>b.text).join('');
+  const m = txt.match(/\{[^{}]*"(?:name|gameName)"[^{}]*"priceTRY"[^{}]*\}/);
+  if (m) {
+    const j = JSON.parse(m[0]);
+    return { name: j.name||j.gameName, priceTRY: j.priceTRY };
+  }
+  throw new Error('Parse failed: '+txt.slice(0,100));
+}
+
+// ══════════════════════════════════
+//  MAIN SEARCH
+// ══════════════════════════════════
+async function go() {
+  const query = document.getElementById('q').value.trim();
+  if (!query) return;
+  setLdg('🔍 جاري البحث...');
+
+  // custom override
+  const lq = query.toLowerCase();
+  for (const [k,v] of Object.entries(CP)) {
+    if (lq===k.toLowerCase()||lq.includes(k.toLowerCase())||k.toLowerCase().includes(lq)) {
+      setRes(k, v, true); return;
+    }
+  }
+
+  const errs = [];
+
+  if (curMode === 'url') {
+    const pid = getPid(query);
+    if (!pid) { setErr('الرابط غير صحيح'); return; }
+
+    setLdg('🔍 Xbox API...');
+    try { const d=await xboxById(pid); done(d); return; }
+    catch(e) { errs.push('Direct:'+e.message); }
+
+    setLdg('🔍 Proxy...');
+    try { const d=await xboxByIdProxy(pid); done(d); return; }
+    catch(e) { errs.push('Proxy:'+e.message); }
+
+  } else {
+    setLdg('🔍 Xbox Search...');
+    try { const d=await xboxSearch(query); done(d); return; }
+    catch(e) { errs.push('Search:'+e.message); }
+
+    setLdg('🔍 Proxy Search...');
+    try { const d=await xboxByIdProxy(query); done(d); return; }
+    catch(e) { errs.push('ProxySrch:'+e.message); }
+  }
+
+  // Claude fallback if key exists
+  if (localStorage.getItem('rsx_ak')) {
+    setLdg('🤖 Claude AI...');
+    try { const d=await claudeAsk(query, curMode==='url'); done(d); return; }
+    catch(e) { errs.push('Claude:'+e.message); }
+  }
+
+  setErr(errs.join(' | '));
+}
+
+function done(d) {
+  const cost = Math.round(d.priceTRY * tryRate);
+  setRes(d.name, calc(cost), false);
+}
+
+// ══════════════════════════════════
+//  MANUAL
+// ══════════════════════════════════
+function manual_apply() {
+  const p = parseFloat(document.getElementById('mt').value);
+  if (!p || p<=0) return;
+  const name = document.getElementById('mn').value.trim() ||
+               document.getElementById('q').value.trim() || 'اللعبة';
+  setRes(name, calc(Math.round(p * tryRate)), false);
+}
+
+// ══════════════════════════════════
+//  ADMIN
+// ══════════════════════════════════
+function doLogin() {
+  if (document.getElementById('pin').value === PIN) {
+    authed = true;
+    document.getElementById('p-login').style.display = 'none';
+    document.getElementById('p-admin').style.display = '';
+  } else {
+    document.getElementById('perr').textContent = 'الرقم السري غير صحيح ❌';
+  }
+}
+function saveRate() {
+  tryRate = parseFloat(document.getElementById('ri').value)||35;
+  localStorage.setItem('rsx_r', tryRate);
+  flash('✅ تم حفظ سعر الليرة');
+}
+function addCP() {
+  const n=document.getElementById('nn').value.trim();
+  const p=parseInt(document.getElementById('np').value);
+  if(!n||!p) return;
+  CP[n]=p; saveCP();
+  document.getElementById('nn').value='';
+  document.getElementById('np').value='';
+  flash('✅ تم الإضافة');
+}
+function delCP(n) { delete CP[n]; saveCP(); flash('🗑 تم الحذف'); }
+function editCP(n) {
+  const v=prompt(`سعر جديد لـ "${n}" بالدينار:`, CP[n]);
+  if(v&&parseInt(v)>0){ CP[n]=parseInt(v); saveCP(); flash('✅ تم التعديل'); }
+}
+function saveCP() {
+  localStorage.setItem('rsx_cp', JSON.stringify(CP));
+  renderCP();
+}
+function renderCP() {
+  const el=document.getElementById('cplist'); if(!el) return;
+  const ks=Object.keys(CP);
+  if(!ks.length){ el.innerHTML='<p style="color:rgba(255,255,255,.2);text-align:center;font-size:13px;margin:14px 0;">لا توجد أسعار مخصصة</p>'; return; }
+  el.innerHTML=ks.map(n=>`
+    <div class="ci">
+      <span style="font-size:14px;">${n}</span>
+      <div style="display:flex;align-items:center;gap:8px;">
+        <span style="color:var(--g);font-weight:700;">${CP[n].toLocaleString()} د.ع</span>
+        <button class="bsm" onclick="editCP('${n.replace(/'/g,"\\'")}')">تعديل</button>
+        <button class="bdel" onclick="delCP('${n.replace(/'/g,"\\'")}')">حذف</button>
+      </div>
+    </div>`).join('');
+}
+let ft;
+function flash(m){ const e=document.getElementById('flash'); e.textContent=m; clearTimeout(ft); ft=setTimeout(()=>e.textContent='',2400); }
+</script>
+
+</body>
+</html>
