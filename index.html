@@ -273,74 +273,14 @@ background:rgba(201,162,39,.05);}
       </div>
     </div>
     <div class="card">
-      <div class="sec">📊 تعديل جدول الربح</div>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+        <div class="sec" style="margin-bottom:0;">📊 جدول الربح</div>
+        <button class="bsm" onclick="saveTiers()">💾 حفظ</button>
+      </div>
       <p style="font-size:11px;color:rgba(255,255,255,.3);margin-bottom:14px;">
-        الشرائح الثلاث الأولى: سعر ثابت للزبون — الباقي: ربح يُضاف على التكلفة
+        عدّل النطاق والقيمة لكل شريحة · الأولى 3 ثابتة السعر · الباقي ربح يُضاف
       </p>
-      <!-- شريحة 1 -->
-      <div class="tier-edit">
-        <span class="te-label">0 – 2,000 دينار</span>
-        <div class="te-row">
-          <span class="te-tag">سعر ثابت</span>
-          <input type="number" id="t1" class="te-inp">
-          <span class="te-unit">د.ع</span>
-        </div>
-      </div>
-      <!-- شريحة 2 -->
-      <div class="tier-edit">
-        <span class="te-label">2,001 – 3,000 دينار</span>
-        <div class="te-row">
-          <span class="te-tag">سعر ثابت</span>
-          <input type="number" id="t2" class="te-inp">
-          <span class="te-unit">د.ع</span>
-        </div>
-      </div>
-      <!-- شريحة 3 -->
-      <div class="tier-edit">
-        <span class="te-label">3,001 – 4,999 دينار</span>
-        <div class="te-row">
-          <span class="te-tag">سعر ثابت</span>
-          <input type="number" id="t3" class="te-inp">
-          <span class="te-unit">د.ع</span>
-        </div>
-      </div>
-      <!-- شريحة 4 -->
-      <div class="tier-edit">
-        <span class="te-label">5,000 – 40,000 دينار</span>
-        <div class="te-row">
-          <span class="te-tag">+ ربح</span>
-          <input type="number" id="t4" class="te-inp">
-          <span class="te-unit">د.ع</span>
-        </div>
-      </div>
-      <!-- شريحة 5 -->
-      <div class="tier-edit">
-        <span class="te-label">40,001 – 60,000 دينار</span>
-        <div class="te-row">
-          <span class="te-tag">+ ربح</span>
-          <input type="number" id="t5" class="te-inp">
-          <span class="te-unit">د.ع</span>
-        </div>
-      </div>
-      <!-- شريحة 6 -->
-      <div class="tier-edit">
-        <span class="te-label">60,001 – 90,000 دينار</span>
-        <div class="te-row">
-          <span class="te-tag">+ ربح</span>
-          <input type="number" id="t6" class="te-inp">
-          <span class="te-unit">د.ع</span>
-        </div>
-      </div>
-      <!-- شريحة 7 -->
-      <div class="tier-edit" style="border-bottom:none;">
-        <span class="te-label">90,001+ دينار</span>
-        <div class="te-row">
-          <span class="te-tag">+ ربح</span>
-          <input type="number" id="t7" class="te-inp">
-          <span class="te-unit">د.ع</span>
-        </div>
-      </div>
-      <button class="btn" style="margin-top:16px;" onclick="saveTiers()">💾 حفظ جدول الربح</button>
+      <div id="tiers-list"></div>
     </div>
     <div class="card">
       <div class="sec">🎮 أسعار مخصصة</div>
@@ -397,33 +337,82 @@ const savedKey = localStorage.getItem('rsx_ak');
 if (savedKey) document.getElementById('api-key').value = savedKey;
 
 // ══════════════════════════════════
-//  TIERS (editable)
+//  TIERS (fully editable)
 // ══════════════════════════════════
-const DEFAULT_TIERS = [5000, 7000, 8000, 5000, 6000, 8000, 10000];
-let tiers = JSON.parse(localStorage.getItem('rsx_tiers') || 'null') || [...DEFAULT_TIERS];
+// Each tier: { max: number|null, type: 'fixed'|'profit', val: number }
+// max=null means "and above"
+const DEFAULT_TIERS = [
+  { max: 2000,  type: 'fixed',  val: 5000  },
+  { max: 3000,  type: 'fixed',  val: 7000  },
+  { max: 4999,  type: 'fixed',  val: 8000  },
+  { max: 40000, type: 'profit', val: 5000  },
+  { max: 60000, type: 'profit', val: 6000  },
+  { max: 90000, type: 'profit', val: 8000  },
+  { max: null,  type: 'profit', val: 10000 },
+];
+let tiers = JSON.parse(localStorage.getItem('rsx_tiers2') || 'null') || DEFAULT_TIERS.map(t=>({...t}));
 
 function calc(iqd) {
-  if (iqd <= 2000)  return tiers[0];
-  if (iqd <= 3000)  return tiers[1];
-  if (iqd <= 4999)  return tiers[2];
-  if (iqd <= 40000) return iqd + tiers[3];
-  if (iqd <= 60000) return iqd + tiers[4];
-  if (iqd <= 90000) return iqd + tiers[5];
-  return iqd + tiers[6];
+  for (const t of tiers) {
+    if (t.max === null || iqd <= t.max) {
+      return t.type === 'fixed' ? t.val : iqd + t.val;
+    }
+  }
+  const last = tiers[tiers.length - 1];
+  return last.type === 'fixed' ? last.val : iqd + last.val;
 }
 
-function loadTierInputs() {
-  tiers.forEach((v, i) => {
-    const el = document.getElementById('t' + (i+1));
-    if (el) el.value = v;
-  });
+function renderTiers() {
+  const el = document.getElementById('tiers-list');
+  if (!el) return;
+  el.innerHTML = tiers.map((t, i) => {
+    const isLast = i === tiers.length - 1;
+    const prevMax = i === 0 ? 0 : (tiers[i-1].max || 0);
+    const rangeLabel = i === 0 ? 'من 0' : `من ${(prevMax+1).toLocaleString()}`;
+    return `
+    <div style="background:rgba(255,255,255,.025);border-radius:10px;padding:12px;margin-bottom:8px;border:1px solid rgba(255,255,255,.06);">
+      <div style="font-size:11px;color:rgba(255,255,255,.35);margin-bottom:8px;">الشريحة ${i+1}</div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;">
+        <!-- from label -->
+        <span style="font-size:12px;color:rgba(255,255,255,.4);white-space:nowrap;">${rangeLabel} إلى</span>
+        <!-- max input -->
+        ${isLast
+          ? `<span style="font-size:13px;color:var(--g);font-weight:700;padding:7px 10px;background:rgba(201,162,39,.08);border-radius:7px;">∞ ما فوق</span>`
+          : `<input type="number" value="${t.max}" onchange="tiers[${i}].max=parseInt(this.value)||0"
+              style="width:100px;padding:7px 10px;border-radius:7px;border:1px solid rgba(201,162,39,.25);
+                background:rgba(255,255,255,.05);color:#fff;font-size:13px;font-family:inherit;">`
+        }
+        <!-- type toggle -->
+        <button onclick="tiers[${i}].type=tiers[${i}].type==='fixed'?'profit':'fixed';renderTiers();"
+          style="padding:6px 12px;border-radius:7px;border:1px solid rgba(201,162,39,.3);
+            background:${t.type==='fixed'?'rgba(201,162,39,.15)':'rgba(100,200,100,.1)'};
+            color:${t.type==='fixed'?'#c9a227':'#5ecf72'};
+            cursor:pointer;font-family:inherit;font-size:12px;font-weight:700;">
+          ${t.type === 'fixed' ? '🔒 ثابت' : '➕ ربح'}
+        </button>
+        <!-- value -->
+        <input type="number" value="${t.val}" onchange="tiers[${i}].val=parseInt(this.value)||0"
+          style="flex:1;min-width:80px;padding:7px 10px;border-radius:7px;
+            border:1px solid rgba(201,162,39,.25);background:rgba(255,255,255,.05);
+            color:var(--g);font-size:14px;font-weight:700;font-family:inherit;">
+        <span style="font-size:11px;color:rgba(255,255,255,.3);">د.ع</span>
+      </div>
+      <div style="font-size:11px;color:rgba(255,255,255,.2);margin-top:6px;">
+        ${t.type==='fixed'
+          ? `💰 السعر للزبون = ${t.val.toLocaleString()} دينار ثابت`
+          : `💰 السعر = التكلفة + ${t.val.toLocaleString()} دينار ربح`}
+      </div>
+    </div>`;
+  }).join('');
 }
 
 function saveTiers() {
-  tiers = [1,2,3,4,5,6,7].map(i => parseInt(document.getElementById('t'+i).value) || DEFAULT_TIERS[i-1]);
-  localStorage.setItem('rsx_tiers', JSON.stringify(tiers));
+  localStorage.setItem('rsx_tiers2', JSON.stringify(tiers));
   flash('✅ تم حفظ جدول الربح');
+  renderTiers();
 }
+
+function loadTierInputs() { renderTiers(); }
 
 // ══════════════════════════════════
 //  UI HELPERS
@@ -484,7 +473,13 @@ function saveApiKey() {
 function getPid(url) {
   try {
     const parts = new URL(url.trim()).pathname.split('/').filter(Boolean);
-    return parts[parts.length-1]?.toUpperCase() || null;
+    // Product ID is ~12 uppercase alphanumeric chars (e.g. 9N2ZDN7NWQKV)
+    // SKU is short like "0010" — skip it
+    for (let i = parts.length - 1; i >= 0; i--) {
+      const p = parts[i].toUpperCase();
+      if (/^[A-Z0-9]{8,20}$/.test(p) && p.length >= 10) return p;
+    }
+    return parts[parts.length - 1]?.toUpperCase() || null;
   } catch { return null; }
 }
 
