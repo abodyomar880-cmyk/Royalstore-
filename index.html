@@ -369,63 +369,118 @@ cloudLoad().then(function() {
   renderCP();
 });
 
+// // ══════════════════════════════════
+//  CLOUD SYNC (JSONBin.io) FIXED PRO
 // ══════════════════════════════════
-//  CLOUD SYNC (JSONBin.io)
-// ══════════════════════════════════
-function getBinId()  { return localStorage.getItem('rsx_binid')  || ''; }
-function getBinKey() { return localStorage.getItem('rsx_binkey') || ''; }
 
+function getBinId() {
+  return localStorage.getItem('rsx_binid') || '';
+}
+
+function getBinKey() {
+  return localStorage.getItem('rsx_binkey') || '';
+}
+
+// ✅ تحميل من السيرفر (بدون كاش)
 async function cloudLoad() {
   const id = getBinId();
-  if (!id) return;
+  const key = getBinKey();
+
+  if (!id || !key) return;
+
   try {
-    var headers = {'X-Access-Key': getBinKey()};
-    var r = await fetch('https://api.jsonbin.io/v3/b/' + id + '/latest', {headers: headers});
-    if (!r.ok) return;
-    var d = await r.json();
-    var rec = d.record;
+    const res = await fetch(
+      `https://api.jsonbin.io/v3/b/${id}/latest?${Date.now()}`,
+      {
+        headers: {
+          "X-Master-Key": key,
+          "X-Bin-Meta": false,
+          "Cache-Control": "no-cache"
+        }
+      }
+    );
+
+    if (!res.ok) return;
+
+    const data = await res.json();
+    const rec = data.record;
+
     if (!rec) return;
-    if (typeof rec.rate === 'number') {
+
+    if (typeof rec.rate === "number") {
       tryRate = rec.rate;
       localStorage.setItem('rsx_r', tryRate);
     }
-    if (rec.customPrices && typeof rec.customPrices === 'object') {
+
+    if (rec.customPrices && typeof rec.customPrices === "object") {
       CP = rec.customPrices;
       localStorage.setItem('rsx_cp', JSON.stringify(CP));
     }
-  } catch(e) {}
+
+    // تحديث الواجهة
+    document.getElementById('ri').value = tryRate;
+    renderCP();
+
+  } catch (e) {
+    console.log("Cloud load error:", e);
+  }
 }
 
+// ✅ حفظ للسيرفر
 async function cloudSave() {
-  var id = getBinId(), key = getBinKey();
+  const id = getBinId();
+  const key = getBinKey();
+
   if (!id || !key) return false;
+
   try {
-    var r = await fetch('https://api.jsonbin.io/v3/b/' + id, {
-      method: 'PUT',
-      headers: {'Content-Type':'application/json','X-Master-Key': key},
-      body: JSON.stringify({rate: tryRate, customPrices: CP})
+    const res = await fetch(`https://api.jsonbin.io/v3/b/${id}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        "X-Master-Key": key
+      },
+      body: JSON.stringify({
+        rate: tryRate,
+        customPrices: CP
+      })
     });
-    return r.ok;
-  } catch(e) { return false; }
+
+    return res.ok;
+
+  } catch (e) {
+    console.log("Cloud save error:", e);
+    return false;
+  }
 }
 
+// ✅ حفظ الإعداد
 function saveCloudConfig() {
-  var id  = document.getElementById('bin-id').value.trim();
-  var key = document.getElementById('bin-key').value.trim();
-  if (!id || !key) { setSyncStatus('⚠️ أدخل Bin ID و Master Key', '#ffb347'); return; }
+  const id = document.getElementById('bin-id').value.trim();
+  const key = document.getElementById('bin-key').value.trim();
+
+  if (!id || !key) {
+    setSyncStatus('⚠️ أدخل Bin ID و Master Key', '#ffb347');
+    return;
+  }
+
   localStorage.setItem('rsx_binid', id);
   localStorage.setItem('rsx_binkey', key);
+
   setSyncStatus('✅ تم حفظ الإعداد', '#5ecf72');
 }
 
+// ✅ زر مزامنة
 async function syncNow() {
   setSyncStatus('🔄 جاري المزامنة...', '#6ab4ff');
+
   await cloudLoad();
-  document.getElementById('ri').value = tryRate;
-  renderCP();
+
   setSyncStatus('✅ تمت المزامنة', '#5ecf72');
 }
 
+// ✅ مزامنة تلقائية
+setInterval(cloudLoad, 5000);
 function setSyncStatus(msg, color) {
   var el = document.getElementById('sync-status');
   if (el) { el.textContent = msg; el.style.color = color || 'rgba(255,255,255,.3)'; }
