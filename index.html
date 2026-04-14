@@ -334,7 +334,7 @@ white-space:nowrap;">
 // ══════════════════════════════════
 //  STATE
 // ══════════════════════════════════
-let tryRate = parseFloat(localStorage.getItem('rsx_r')||'40');
+let tryRate = 40;
 let CP = JSON.parse(localStorage.getItem('rsx_cp')||'{}');
 let authed = false;
 const PIN = '2011';
@@ -362,8 +362,7 @@ async function cloudLoad() {
     var rec = d.record;
     if (!rec) return false;
     if (typeof rec.rate === 'number') {
-      tryRate = rec.rate;
-      localStorage.setItem('rsx_r', tryRate);
+      // rate مثبّت في الكود — لا نحمّله من السحابة
     }
     if (rec.customPrices && typeof rec.customPrices === 'object') {
       CP = rec.customPrices;
