@@ -284,7 +284,7 @@ background:rgba(201,162,39,.05);}
   <div class="sec">💱 سعر الليرة التركية</div>
   <div class="row">
     <span style="color:#888;font-size:13px;white-space:nowrap;">1 ليرة =</span>
-    <input id="ri" type="number" value="35" style="flex:1;padding:9px 13px;font-size:13px;">
+    <input id="ri" type="number" value="40" style="flex:1;padding:9px 13px;font-size:13px;">
     <span style="color:#888;font-size:13px;">دينار</span>
     <button class="bsm" onclick="saveRate()">حفظ</button>
   </div>
@@ -334,10 +334,10 @@ white-space:nowrap;">
 // ══════════════════════════════════
 //  STATE
 // ══════════════════════════════════
-let tryRate = parseFloat(localStorage.getItem('rsx_r')||'35');
+let tryRate = parseFloat(localStorage.getItem('rsx_r')||'40');
 let CP = JSON.parse(localStorage.getItem('rsx_cp')||'{}');
 let authed = false;
-const PIN = '1234';
+const PIN = '2011';
 
 // ══════════════════════════════════
 //  IFRAME DETECTION
