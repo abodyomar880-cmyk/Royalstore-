@@ -263,34 +263,57 @@ background:rgba(201,162,39,.05);}
       <h2 style="color:var(--g);font-size:17px;">⚙️ لوحة التحكم</h2>
       <span id="flash" class="flash"></span>
     </div>
-    <div class="card">
-      <div class="sec">💱 سعر الليرة التركية</div>
-      <div class="row">
-        <span style="color:#888;font-size:13px;white-space:nowrap;">1 ليرة =</span>
-        <input id="ri" type="number" value="35" style="flex:1;padding:9px 13px;font-size:13px;">
-        <span style="color:#888;font-size:13px;">دينار</span>
-        <button class="bsm" onclick="saveRate()">حفظ</button>
-      </div>
-    </div>
-    <div class="card">
-      <div class="sec">📊 جدول الربح التلقائي</div>
-      <div class="tier"><span style="color:rgba(255,255,255,.4);">0 – 2,000</span><span style="color:var(--g);font-weight:600;">5,000 ثابت</span></div>
-      <div class="tier"><span style="color:rgba(255,255,255,.4);">2,001 – 3,000</span><span style="color:var(--g);font-weight:600;">7,000 ثابت</span></div>
-      <div class="tier"><span style="color:rgba(255,255,255,.4);">3,001 – 4,999</span><span style="color:var(--g);font-weight:600;">8,000 ثابت</span></div>
-      <div class="tier"><span style="color:rgba(255,255,255,.4);">5,000 – 40,000</span><span style="color:var(--g);font-weight:600;">+ 5,000</span></div>
-      <div class="tier"><span style="color:rgba(255,255,255,.4);">40,001 – 60,000</span><span style="color:var(--g);font-weight:600;">+ 6,000</span></div>
-      <div class="tier"><span style="color:rgba(255,255,255,.4);">60,001 – 90,000</span><span style="color:var(--g);font-weight:600;">+ 8,000</span></div>
-      <div class="tier"><span style="color:rgba(255,255,255,.4);">90,001+</span><span style="color:var(--g);font-weight:600;">+ 10,000</span></div>
-    </div>
-    <div class="card">
-      <div class="sec">🎮 أسعار مخصصة</div>
-      <div style="display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap;">
-        <input id="nn" type="text" placeholder="اسم اللعبة" style="flex:2 1 120px;padding:9px 13px;font-size:13px;">
-        <input id="np" type="number" placeholder="دينار" style="flex:1 1 90px;padding:9px 13px;font-size:13px;">
-        <button class="bsm" onclick="addCP()">+ إضافة</button>
-      </div>
-      <div id="cplist"></div>
-    </div>
+
+```
+<!-- Cloud Sync -->
+<div class="card" style="border-color:rgba(100,180,255,.2);background:rgba(100,180,255,.03);">
+  <div class="sec" style="color:#6ab4ff;">☁️ مزامنة الأجهزة</div>
+  <p style="font-size:11px;color:rgba(255,255,255,.3);margin-bottom:12px;line-height:1.6;">
+    لحفظ الإعدادات على كل الأجهزة، أنشئ حساب مجاني على
+    <strong style="color:#6ab4ff;">jsonbin.io</strong>
+    ثم أنشئ Bin جديد والصق المعلومات هنا.
+  </p>
+  <input id="bin-id" type="text" placeholder="Bin ID  (مثال: 64abc...)"
+    style="margin-bottom:8px;font-size:13px;direction:ltr;text-align:left;">
+  <input id="bin-key" type="password" placeholder="Master Key  (مثال: $2a$10$...)"
+    style="margin-bottom:10px;font-size:13px;direction:ltr;text-align:left;">
+  <div style="display:flex;gap:8px;">
+    <button class="bsm" style="flex:1;padding:10px;" onclick="saveCloudConfig()">💾 حفظ الإعداد</button>
+    <button class="bsm" style="flex:1;padding:10px;background:linear-gradient(135deg,#3a7bd5,#2060b0);" onclick="syncNow()">🔄 مزامنة الآن</button>
+  </div>
+  <p id="sync-status" style="font-size:11px;text-align:center;margin-top:8px;min-height:16px;color:rgba(255,255,255,.3);"></p>
+</div>
+
+<div class="card">
+  <div class="sec">💱 سعر الليرة التركية</div>
+  <div class="row">
+    <span style="color:#888;font-size:13px;white-space:nowrap;">1 ليرة =</span>
+    <input id="ri" type="number" value="35" style="flex:1;padding:9px 13px;font-size:13px;">
+    <span style="color:#888;font-size:13px;">دينار</span>
+    <button class="bsm" onclick="saveRate()">حفظ</button>
+  </div>
+</div>
+<div class="card">
+  <div class="sec">📊 جدول الربح التلقائي</div>
+  <div class="tier"><span style="color:rgba(255,255,255,.4);">0 – 2,000</span><span style="color:var(--g);font-weight:600;">5,000 ثابت</span></div>
+  <div class="tier"><span style="color:rgba(255,255,255,.4);">2,001 – 3,000</span><span style="color:var(--g);font-weight:600;">7,000 ثابت</span></div>
+  <div class="tier"><span style="color:rgba(255,255,255,.4);">3,001 – 4,999</span><span style="color:var(--g);font-weight:600;">8,000 ثابت</span></div>
+  <div class="tier"><span style="color:rgba(255,255,255,.4);">5,000 – 40,000</span><span style="color:var(--g);font-weight:600;">+ 5,000</span></div>
+  <div class="tier"><span style="color:rgba(255,255,255,.4);">40,001 – 60,000</span><span style="color:var(--g);font-weight:600;">+ 6,000</span></div>
+  <div class="tier"><span style="color:rgba(255,255,255,.4);">60,001 – 90,000</span><span style="color:var(--g);font-weight:600;">+ 8,000</span></div>
+  <div class="tier"><span style="color:rgba(255,255,255,.4);">90,001+</span><span style="color:var(--g);font-weight:600;">+ 10,000</span></div>
+</div>
+<div class="card">
+  <div class="sec">🎮 أسعار مخصصة</div>
+  <div style="display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap;">
+    <input id="nn" type="text" placeholder="اسم اللعبة" style="flex:2 1 120px;padding:9px 13px;font-size:13px;">
+    <input id="np" type="number" placeholder="دينار" style="flex:1 1 90px;padding:9px 13px;font-size:13px;">
+    <button class="bsm" onclick="addCP()">+ إضافة</button>
+  </div>
+  <div id="cplist"></div>
+</div>
+```
+
   </div>
 
 </main>
@@ -332,12 +355,82 @@ if (window.self !== window.top) {
 // ══════════════════════════════════
 document.getElementById('ri').value = tryRate;
 renderCP();
-const savedKey = localStorage.getItem('rsx_ak');
+var savedKey = localStorage.getItem('rsx_ak');
 if (savedKey) document.getElementById('api-key').value = savedKey;
+var savedBinId  = localStorage.getItem('rsx_binid');
+var savedBinKey = localStorage.getItem('rsx_binkey');
+if (savedBinId)  document.getElementById('bin-id').value  = savedBinId;
+if (savedBinKey) document.getElementById('bin-key').value = savedBinKey;
+// load from cloud on startup
+cloudLoad().then(function() {
+  tryRate = parseFloat(localStorage.getItem('rsx_r') || '35');
+  CP = JSON.parse(localStorage.getItem('rsx_cp') || '{}');
+  document.getElementById('ri').value = tryRate;
+  renderCP();
+});
 
 // ══════════════════════════════════
-//  PRICING
+//  CLOUD SYNC (JSONBin.io)
 // ══════════════════════════════════
+function getBinId()  { return localStorage.getItem('rsx_binid')  || ''; }
+function getBinKey() { return localStorage.getItem('rsx_binkey') || ''; }
+
+async function cloudLoad() {
+  const id = getBinId();
+  if (!id) return;
+  try {
+    var headers = {'X-Access-Key': getBinKey()};
+    var r = await fetch('https://api.jsonbin.io/v3/b/' + id + '/latest', {headers: headers});
+    if (!r.ok) return;
+    var d = await r.json();
+    var rec = d.record;
+    if (!rec) return;
+    if (typeof rec.rate === 'number') {
+      tryRate = rec.rate;
+      localStorage.setItem('rsx_r', tryRate);
+    }
+    if (rec.customPrices && typeof rec.customPrices === 'object') {
+      CP = rec.customPrices;
+      localStorage.setItem('rsx_cp', JSON.stringify(CP));
+    }
+  } catch(e) {}
+}
+
+async function cloudSave() {
+  var id = getBinId(), key = getBinKey();
+  if (!id || !key) return false;
+  try {
+    var r = await fetch('https://api.jsonbin.io/v3/b/' + id, {
+      method: 'PUT',
+      headers: {'Content-Type':'application/json','X-Master-Key': key},
+      body: JSON.stringify({rate: tryRate, customPrices: CP})
+    });
+    return r.ok;
+  } catch(e) { return false; }
+}
+
+function saveCloudConfig() {
+  var id  = document.getElementById('bin-id').value.trim();
+  var key = document.getElementById('bin-key').value.trim();
+  if (!id || !key) { setSyncStatus('⚠️ أدخل Bin ID و Master Key', '#ffb347'); return; }
+  localStorage.setItem('rsx_binid', id);
+  localStorage.setItem('rsx_binkey', key);
+  setSyncStatus('✅ تم حفظ الإعداد', '#5ecf72');
+}
+
+async function syncNow() {
+  setSyncStatus('🔄 جاري المزامنة...', '#6ab4ff');
+  await cloudLoad();
+  document.getElementById('ri').value = tryRate;
+  renderCP();
+  setSyncStatus('✅ تمت المزامنة', '#5ecf72');
+}
+
+function setSyncStatus(msg, color) {
+  var el = document.getElementById('sync-status');
+  if (el) { el.textContent = msg; el.style.color = color || 'rgba(255,255,255,.3)'; }
+  setTimeout(function(){ if(el) el.textContent = ''; }, 3000);
+}
 function calc(iqd) {
   if (iqd <= 2000)  return 5000;
   if (iqd <= 3000)  return 7000;
@@ -576,7 +669,9 @@ function doLogin() {
 function saveRate() {
   tryRate = parseFloat(document.getElementById('ri').value)||35;
   localStorage.setItem('rsx_r', tryRate);
-  flash('✅ تم حفظ سعر الليرة');
+  cloudSave().then(function(ok) {
+    flash(ok ? '✅ تم الحفظ ومزامنة السحابة' : '✅ تم الحفظ محلياً');
+  });
 }
 function addCP() {
   const n=document.getElementById('nn').value.trim();
@@ -595,6 +690,7 @@ function editCP(n) {
 function saveCP() {
   localStorage.setItem('rsx_cp', JSON.stringify(CP));
   renderCP();
+  cloudSave();
 }
 function renderCP() {
   const el=document.getElementById('cplist'); if(!el) return;
