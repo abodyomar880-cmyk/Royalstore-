@@ -349,36 +349,18 @@ if (window.self !== window.top) {
 // ══════════════════════════════════
 //  INIT
 // ══════════════════════════════════
-document.getElementById('ri').value = tryRate;
-renderCP();
-var savedKey = localStorage.getItem('rsx_ak');
-if (savedKey) document.getElementById('api-key').value = savedKey;
-var savedBinKey = localStorage.getItem('rsx_binkey');
-if (savedBinKey) document.getElementById('bin-key').value = savedBinKey;
-// تحميل من السحابة عند كل فتح
-cloudLoad().then(function() {
-  tryRate = parseFloat(localStorage.getItem('rsx_r') || '35');
-  CP = JSON.parse(localStorage.getItem('rsx_cp') || '{}');
-  document.getElementById('ri').value = tryRate;
-  renderCP();
-});
-
+//  CLOUD SYNC
 // ══════════════════════════════════
-//  CLOUD SYNC (JSONBin.io)
-// ══════════════════════════════════
-var CLOUD_BIN = '69de3167856a68218931b482'; // مثبّت — يشتغل على كل الأجهزة
+var CLOUD_BIN = '69de3167856a68218931b482';
 function getBinKey() { return localStorage.getItem('rsx_binkey') || ''; }
 
 async function cloudLoad() {
   try {
-    var opts = {};
-    var k = getBinKey();
-    if (k) opts.headers = {'X-Master-Key': k};
-    var r = await fetch('https://api.jsonbin.io/v3/b/' + CLOUD_BIN + '/latest', opts);
-    if (!r.ok) return;
+    var r = await fetch('https://api.jsonbin.io/v3/b/' + CLOUD_BIN + '/latest');
+    if (!r.ok) return false;
     var d = await r.json();
     var rec = d.record;
-    if (!rec) return;
+    if (!rec) return false;
     if (typeof rec.rate === 'number') {
       tryRate = rec.rate;
       localStorage.setItem('rsx_r', tryRate);
@@ -387,7 +369,8 @@ async function cloudLoad() {
       CP = rec.customPrices;
       localStorage.setItem('rsx_cp', JSON.stringify(CP));
     }
-  } catch(e) {}
+    return true;
+  } catch(e) { return false; }
 }
 
 async function cloudSave() {
@@ -412,17 +395,41 @@ function saveCloudConfig() {
 
 async function syncNow() {
   setSyncStatus('🔄 جاري المزامنة...', '#6ab4ff');
-  await cloudLoad();
+  var ok = await cloudLoad();
   document.getElementById('ri').value = tryRate;
   renderCP();
-  setSyncStatus('✅ تمت المزامنة', '#5ecf72');
+  setSyncStatus(ok ? '✅ تمت المزامنة' : '❌ فشلت المزامنة - تحقق من الإعدادات', ok ? '#5ecf72' : '#ff7070');
 }
 
 function setSyncStatus(msg, color) {
   var el = document.getElementById('sync-status');
-  if (el) { el.textContent = msg; el.style.color = color || 'rgba(255,255,255,.3)'; }
-  setTimeout(function(){ if(el) el.textContent = ''; }, 3000);
+  if (!el) return;
+  el.textContent = msg;
+  el.style.color = color || 'rgba(255,255,255,.3)';
+  setTimeout(function(){ el.textContent = ''; }, 4000);
 }
+
+// ══════════════════════════════════
+//  INIT
+// ══════════════════════════════════
+document.getElementById('ri').value = tryRate;
+renderCP();
+var savedKey = localStorage.getItem('rsx_ak');
+if (savedKey) document.getElementById('api-key').value = savedKey;
+var savedBinKey = localStorage.getItem('rsx_binkey');
+if (savedBinKey) document.getElementById('bin-key').value = savedBinKey;
+
+// تحميل من السحابة عند الفتح
+cloudLoad().then(function(ok) {
+  if (ok) {
+    document.getElementById('ri').value = tryRate;
+    renderCP();
+  }
+});
+
+// ══════════════════════════════════
+//  PRICING
+// ══════════════════════════════════
 function calc(iqd) {
   if (iqd <= 2000)  return 5000;
   if (iqd <= 3000)  return 7000;
