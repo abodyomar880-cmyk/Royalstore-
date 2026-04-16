@@ -3,7 +3,7 @@
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>👑 رويال ستور - Xbox</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800;900&display=swap');
@@ -96,8 +96,8 @@ background:linear-gradient(135deg,#f5d060,var(–g));
 .pbox{background:linear-gradient(135deg,var(–g),var(–g2),#7a5c10);
 border-radius:12px;padding:22px 16px;box-shadow:0 8px 28px rgba(201,162,39,.3);}
 .plabel{font-size:11px;color:rgba(0,0,0,.6);letter-spacing:2px;margin-bottom:6px;}
-.pval{font-size:38px;font-weight:900;color:#000;line-height:1;}
-.punit{font-size:15px;font-weight:600;margin-right:6px;}
+.pval{font-size:38px;font-weight:900;color:#000;line-height:1;text-shadow:none;}
+.punit{font-size:15px;font-weight:700;margin-right:6px;color:#000;}
 .badge{display:inline-block;margin-bottom:8px;
 background:rgba(201,162,39,.15);border:1px solid rgba(201,162,39,.3);
 color:var(–g);font-size:11px;border-radius:20px;padding:2px 10px;}
@@ -214,7 +214,7 @@ background:rgba(201,162,39,.05);}
   <p id="ldg-msg" style="font-size:14px;">جاري البحث...</p>
 </div>
 <div id="errd" class="err" style="display:none;"></div>
-<div id="manual" style="display:none;" class="card" style="border-color:rgba(201,162,39,.3);">
+<div id="manual" style="display:none;border-color:rgba(201,162,39,.3);" class="card">
   <p style="font-size:14px;color:var(--g);font-weight:700;margin-bottom:4px;">📝 أدخل السعر يدوياً</p>
   <p style="font-size:12px;color:rgba(255,255,255,.3);margin-bottom:12px;">أدخل سعر اللعبة بالليرة التركية</p>
   <input id="mn" type="text" placeholder="اسم اللعبة (اختياري)" style="margin-bottom:10px;">
@@ -231,7 +231,7 @@ background:rgba(201,162,39,.05);}
   <div id="rbadge" class="badge" style="display:none;">سعر مخصص</div>
   <div class="pbox">
     <div class="plabel">💰 سعر اللعبة في رويال ستور</div>
-    <div class="pval"><span id="rprice"></span><span class="punit">دينار</span></div>
+    <div class="pval"><span id="rprice" style="color:#000;text-shadow:none;"></span><span class="punit" style="color:#000;">دينار</span></div>
   </div>
   <p style="margin-top:10px;font-size:11px;color:rgba(255,255,255,.2);">
     الأسعار تقريبية وقد تتغير حسب سعر الصرف
@@ -316,7 +316,7 @@ background:rgba(201,162,39,.05);}
 
 <!-- ══ WHATSAPP BUTTON ══ -->
 
-<a href="https://wa.me/9647741665573" target="_blank" id="wa-btn"
+<a href="https://wa.me/9647741665573" target="_blank" rel="noopener noreferrer" id="wa-btn"
 style="position:fixed;bottom:22px;left:50%;transform:translateX(-50%);z-index:200;
 display:flex;align-items:center;gap:10px;
 background:linear-gradient(135deg,#25d366,#128c50);
@@ -337,7 +337,7 @@ white-space:nowrap;">
 let tryRate = 40;
 let CP = JSON.parse(localStorage.getItem('rsx_cp')||'{}');
 let authed = false;
-const PIN = '2011';
+const PIN = 'RS2026##';
 
 // ══════════════════════════════════
 //  IFRAME DETECTION
@@ -633,7 +633,7 @@ async function go() {
     catch(e) { errs.push('Claude:'+e.message); }
   }
 
-  setErr(errs.join(' | '));
+  setErr('تعذّر جلب سعر اللعبة — يرجى إدخال السعر يدوياً أو المحاولة لاحقاً');
 }
 
 function done(d) {
@@ -655,13 +655,32 @@ function manual_apply() {
 // ══════════════════════════════════
 //  ADMIN
 // ══════════════════════════════════
+var loginAttempts = 0;
+var loginLocked = false;
+
 function doLogin() {
+  if (loginLocked) return;
   if (document.getElementById('pin').value === PIN) {
+    loginAttempts = 0;
     authed = true;
     document.getElementById('p-login').style.display = 'none';
     document.getElementById('p-admin').style.display = '';
   } else {
-    document.getElementById('perr').textContent = 'الرقم السري غير صحيح ❌';
+    loginAttempts++;
+    if (loginAttempts >= 5) {
+      loginLocked = true;
+      document.getElementById('perr').textContent = '⛔ كثرة المحاولات — انتظر 60 ثانية';
+      document.getElementById('pin').disabled = true;
+      setTimeout(function() {
+        loginLocked = false;
+        loginAttempts = 0;
+        document.getElementById('pin').disabled = false;
+        document.getElementById('pin').value = '';
+        document.getElementById('perr').textContent = '';
+      }, 60000);
+    } else {
+      document.getElementById('perr').textContent = 'الرقم السري غير صحيح ❌ (محاولة ' + loginAttempts + ' من 5)';
+    }
   }
 }
 function saveRate() {
@@ -690,17 +709,21 @@ function saveCP() {
   renderCP();
   cloudSave();
 }
+function escHtml(s) {
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+}
+
 function renderCP() {
   const el=document.getElementById('cplist'); if(!el) return;
   const ks=Object.keys(CP);
   if(!ks.length){ el.innerHTML='<p style="color:rgba(255,255,255,.2);text-align:center;font-size:13px;margin:14px 0;">لا توجد أسعار مخصصة</p>'; return; }
   el.innerHTML=ks.map(n=>`
     <div class="ci">
-      <span style="font-size:14px;">${n}</span>
+      <span style="font-size:14px;">${escHtml(n)}</span>
       <div style="display:flex;align-items:center;gap:8px;">
         <span style="color:var(--g);font-weight:700;">${CP[n].toLocaleString()} د.ع</span>
-        <button class="bsm" onclick="editCP('${n.replace(/'/g,"\\'")}')">تعديل</button>
-        <button class="bdel" onclick="delCP('${n.replace(/'/g,"\\'")}')">حذف</button>
+        <button class="bsm" onclick="editCP('${escHtml(n.replace(/'/g,"\\'"))}')">تعديل</button>
+        <button class="bdel" onclick="delCP('${escHtml(n.replace(/'/g,"\\'"))}')">حذف</button>
       </div>
     </div>`).join('');
 }
